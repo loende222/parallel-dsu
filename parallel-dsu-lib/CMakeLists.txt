@@ -1,4 +1,3 @@
-  
 get_filename_component(LIB_INCLUDE_PATH ".." ABSOLUTE)
 get_filename_component(LIB_PATH "." ABSOLUTE)
 

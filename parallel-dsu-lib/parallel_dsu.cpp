@@ -1,6 +1,6 @@
 #include "parallel_dsu.h"
 
-DSUParallel::DSUParallel(uint64_t size) {
+DSUParallel::DSUParallel(uint64_t size) : parents_(size), ranks_(size) {
     for (uint64_t i = 0; i < size; ++i) {
         parents_[i].store(i);
         ranks_[i].store(0);
@@ -35,8 +35,9 @@ uint64_t DSUParallel::unite(uint64_t id1, uint64_t id2) {
         id1 = find_set(id1);
         id2 = find_set(id2);
 
-        if (id1 == id2)
+        if (id1 == id2) {
             return id1;
+        }
 
         uint64_t rank1 = ranks_[id1].load();
         uint64_t rank2 = ranks_[id2].load();
@@ -46,8 +47,9 @@ uint64_t DSUParallel::unite(uint64_t id1, uint64_t id2) {
             std::swap(id1, id2);
         }
 
-        if (!parents_[id1].compare_exchange_strong(id1, id2))
+        if (!parents_[id1].compare_exchange_strong(id1, id2)) {
             continue;
+        }
 
         if (rank1 == rank2) {
             ranks_[id2].compare_exchange_weak(rank2, rank2 + 1);
